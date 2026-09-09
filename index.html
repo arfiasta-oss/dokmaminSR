@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Permakanan Siswa - SRT 1 Madiun</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .img-preview {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        /* PRINT STYLES FOR EXACT A4 PAPER */
+        @media print {
+            #app-ui {
+                display: none !important;
+            }
+
+            #report-section {
+                display: block !important;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 12mm 15mm;
+            }
+
+            body {
+                background-color: white !important;
+                margin: 0;
+                padding: 0;
+                color: #000000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .print-card {
+                border: 1px solid #000000;
+                border-radius: 6px;
+                padding: 8px;
+                text-align: center;
+                background-color: #ffffff;
+                page-break-inside: avoid;
+                width: 100%;
+                max-width: 550px;
+                margin-bottom: 12px;
+            }
+
+            .print-img-makanan, .print-img-snack {
+                width: 100%;
+                height: 220px;
+                object-fit: contain;
+                background-color: #ffffff;
+                border-radius: 4px;
+                border: 1px solid #000000;
+            }
+
+            .print-noimg-makanan, .print-noimg-snack {
+                height: 220px; display: flex; align-items: center; justify-content: center; background: #ffffff; color: #000000; font-size: 10pt; border-radius: 4px; border: 1px dashed #000000;
+            }
+
+            .print-page {
+                page-break-after: always;
+            }
+
+            .print-page:last-child {
+                page-break-after: auto;
+            }
+        }
+
+        #report-section {
+            display: none;
+        }
+    </style>
+</head>
+<body class="text-black antialiased min-h-screen">
+
+    <div id="app-ui" class="max-w-4xl mx-auto p-4 md:p-6 my-6">
+        
+        <!-- App Title Header -->
+        <header class="bg-white shadow-sm rounded-xl p-6 mb-6 text-center border-t-4 border-black">
+            <h1 class="text-2xl font-bold text-black uppercase tracking-wide">Laporan Dokumentasi Permakanan Siswa</h1>
+            <h2 class="text-md text-black font-medium mt-1">Sekolah Rakyat Terintegrasi 1 Kabupaten Madiun</h2>
+            <p class="text-xs text-black mt-2">Pilih tanggal dan unggah foto dokumentasi menu makanan harian.</p>
+        </header>
+
+        <!-- Main Form -->
+        <form id="reportForm" class="space-y-6">
+            
+            <!-- Tanggal Input -->
+            <div class="bg-white shadow-sm rounded-xl p-6 border border-gray-200">
+                <h3 class="text-lg font-semibold text-black mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Waktu Pelaporan
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <div>
+                        <label class="block text-xs font-semibold text-black uppercase mb-1">Pilih Tanggal</label>
+                        <input type="date" id="tanggal" required class="w-full border border-gray-400 rounded-lg p-2.5 text-black focus:ring-2 focus:ring-black focus:border-black outline-none transition">
+                    </div>
+                    <div class="bg-gray-100 p-3 rounded-lg border border-gray-300">
+                        <span class="text-xs text-black font-semibold uppercase block">Hari & Tanggal Terpilih:</span>
+                        <span id="display_formatted_date" class="text-sm font-bold text-black mt-0.5 block">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Permakanan Utama Siswa -->
+            <div class="bg-white shadow-sm rounded-xl p-6 border border-gray-200">
+                <h3 class="text-lg font-semibold text-black mb-4 pb-2 border-b border-gray-300 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"></path></svg>
+                    1. Permakanan Utama Siswa
+                </h3>
+                
+                <div class="flex flex-col gap-6 max-w-xl mx-auto">
+                    <!-- Makan Pagi -->
+                    <div class="p-4 border border-gray-300 rounded-lg bg-gray-50 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-black mb-2">Makan Pagi</h4>
+                            <input type="file" id="foto_pagi" accept="image/*" class="w-full text-xs text-black file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 cursor-pointer mb-3" onchange="previewImage(this, 'preview_pagi')">
+                        </div>
+                        <div class="bg-white p-2 rounded-lg border border-dashed border-gray-400 text-center">
+                            <img id="preview_pagi" class="img-preview mb-1" alt="Preview Pagi">
+                            <p id="placeholder_pagi" class="text-xs text-black py-8">Belum ada foto</p>
+                        </div>
+                    </div>
+
+                    <!-- Makan Siang -->
+                    <div class="p-4 border border-gray-300 rounded-lg bg-gray-50 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-black mb-2">Makan Siang</h4>
+                            <input type="file" id="foto_siang" accept="image/*" class="w-full text-xs text-black file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 cursor-pointer mb-3" onchange="previewImage(this, 'preview_siang')">
+                        </div>
+                        <div class="bg-white p-2 rounded-lg border border-dashed border-gray-400 text-center">
+                            <img id="preview_siang" class="img-preview mb-1" alt="Preview Siang">
+                            <p id="placeholder_siang" class="text-xs text-black py-8">Belum ada foto</p>
+                        </div>
+                    </div>
+
+                    <!-- Makan Malam -->
+                    <div class="p-4 border border-gray-300 rounded-lg bg-gray-50 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-black mb-2">Makan Malam</h4>
+                            <input type="file" id="foto_malam" accept="image/*" class="w-full text-xs text-black file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 cursor-pointer mb-3" onchange="previewImage(this, 'preview_malam')">
+                        </div>
+                        <div class="bg-white p-2 rounded-lg border border-dashed border-gray-400 text-center">
+                            <img id="preview_malam" class="img-preview mb-1" alt="Preview Malam">
+                            <p id="placeholder_malam" class="text-xs text-black py-8">Belum ada foto</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nutrisi / Snack Siswa -->
+            <div class="bg-white shadow-sm rounded-xl p-6 border border-gray-200">
+                <h3 class="text-lg font-semibold text-black mb-4 pb-2 border-b border-gray-300 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                    2. Nutrisi / Snack Siswa
+                </h3>
+                
+                <div class="flex flex-col gap-6 max-w-xl mx-auto">
+                    <!-- Snack Pagi -->
+                    <div class="p-4 border border-gray-300 rounded-lg bg-gray-50 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-black mb-2">Snack Pagi</h4>
+                            <input type="file" id="foto_snack_pagi" accept="image/*" class="w-full text-xs text-black file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 cursor-pointer mb-3" onchange="previewImage(this, 'preview_snack_pagi')">
+                        </div>
+                        <div class="bg-white p-2 rounded-lg border border-dashed border-gray-400 text-center">
+                            <img id="preview_snack_pagi" class="img-preview mb-1" alt="Preview Snack Pagi">
+                            <p id="placeholder_snack_pagi" class="text-xs text-black py-8">Belum ada foto</p>
+                        </div>
+                    </div>
+
+                    <!-- Snack Sore -->
+                    <div class="p-4 border border-gray-300 rounded-lg bg-gray-50 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-black mb-2">Snack Sore</h4>
+                            <input type="file" id="foto_snack_sore" accept="image/*" class="w-full text-xs text-black file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 cursor-pointer mb-3" onchange="previewImage(this, 'preview_snack_sore')">
+                        </div>
+                        <div class="bg-white p-2 rounded-lg border border-dashed border-gray-400 text-center">
+                            <img id="preview_snack_sore" class="img-preview mb-1" alt="Preview Snack Sore">
+                            <p id="placeholder_snack_sore" class="text-xs text-black py-8">Belum ada foto</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-2">
+                <button type="button" onclick="resetForm()" class="px-5 py-2.5 border border-gray-400 rounded-lg text-black hover:bg-gray-200 font-medium transition text-sm">
+                    Reset Upload
+                </button>
+                <button type="submit" class="px-6 py-2.5 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 transition shadow-md flex items-center justify-center gap-2 text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Cetak Laporan A4
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- PRINTABLE A4 CONTAINER (Hidden on screen, visible on print) -->
+    <div id="report-section">
+        
+        <!-- HALAMAN 1: PERMAKANAN UTAMA -->
+        <div class="print-page">
+            <!-- Header Page 1 -->
+            <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px; color: #000;">
+                <h1 style="font-size: 15pt; font-weight: bold; margin: 0; text-transform: uppercase; color: #000;">LAPORAN DOKUMENTASI PERMAKANAN SISWA</h1>
+                <h2 style="font-size: 12pt; font-weight: 600; margin: 4px 0 0 0; color: #000;">SEKOLAH RAKYAT TERINTEGRASI 1 KABUPATEN MADIUN</h2>
+            </div>
+
+            <!-- Date Banner Page 1 -->
+            <div style="margin-bottom: 16px; font-size: 11pt; background-color: #ffffff; padding: 6px 12px; border: 1px solid #000; border-radius: 4px; color: #000;">
+                <strong>Hari / Tanggal:</strong> <span class="print_tanggal_formatted">-</span>
+            </div>
+
+            <!-- Meals Section -->
+            <div style="margin-bottom: 16px;">
+                <h3 style="font-size: 11pt; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #000; padding-bottom: 2px; color: #000;">
+                    A. PERMAKANAN UTAMA SISWA
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+                    <!-- Makan Pagi -->
+                    <div class="print-card">
+                        <div style="font-weight: bold; font-size: 10pt; margin-bottom: 6px; color: #000;">1. Makan Pagi</div>
+                        <img id="print_img_pagi" class="print-img-makanan" style="display: none;" alt="Foto Makan Pagi">
+                        <div id="print_noimg_pagi" class="print-noimg-makanan">(Tidak Ada Foto)</div>
+                    </div>
+
+                    <!-- Makan Siang -->
+                    <div class="print-card">
+                        <div style="font-weight: bold; font-size: 10pt; margin-bottom: 6px; color: #000;">2. Makan Siang</div>
+                        <img id="print_img_siang" class="print-img-makanan" style="display: none;" alt="Foto Makan Siang">
+                        <div id="print_noimg_siang" class="print-noimg-makanan">(Tidak Ada Foto)</div>
+                    </div>
+
+                    <!-- Makan Malam -->
+                    <div class="print-card">
+                        <div style="font-weight: bold; font-size: 10pt; margin-bottom: 6px; color: #000;">3. Makan Malam</div>
+                        <img id="print_img_malam" class="print-img-makanan" style="display: none;" alt="Foto Makan Malam">
+                        <div id="print_noimg_malam" class="print-noimg-makanan">(Tidak Ada Foto)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HALAMAN 2: NUTRISI / SNACK -->
+        <div class="print-page" style="page-break-before: always; padding-top: 10px;">
+            <!-- Header Page 2 -->
+            <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px; color: #000;">
+                <h1 style="font-size: 15pt; font-weight: bold; margin: 0; text-transform: uppercase; color: #000;">LAPORAN DOKUMENTASI NUTRISI / SNACK SISWA</h1>
+                <h2 style="font-size: 12pt; font-weight: 600; margin: 4px 0 0 0; color: #000;">SEKOLAH RAKYAT TERINTEGRASI 1 KABUPATEN MADIUN</h2>
+            </div>
+
+            <!-- Date Banner Page 2 -->
+            <div style="margin-bottom: 16px; font-size: 11pt; background-color: #ffffff; padding: 6px 12px; border: 1px solid #000; border-radius: 4px; color: #000;">
+                <strong>Hari / Tanggal:</strong> <span class="print_tanggal_formatted">-</span>
+            </div>
+
+            <!-- Snacks Section -->
+            <div>
+                <h3 style="font-size: 11pt; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #000; padding-bottom: 2px; color: #000;">
+                    B. NUTRISI / SNACK SISWA
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 16px; align-items: center;">
+                    <!-- Snack Pagi -->
+                    <div class="print-card">
+                        <div style="font-weight: bold; font-size: 10pt; margin-bottom: 6px; color: #000;">1. Snack Pagi</div>
+                        <img id="print_img_snack_pagi" class="print-img-snack" style="display: none;" alt="Foto Snack Pagi">
+                        <div id="print_noimg_snack_pagi" class="print-noimg-snack">(Tidak Ada Foto)</div>
+                    </div>
+
+                    <!-- Snack Sore -->
+                    <div class="print-card">
+                        <div style="font-weight: bold; font-size: 10pt; margin-bottom: 6px; color: #000;">2. Snack Sore</div>
+                        <img id="print_img_snack_sore" class="print-img-snack" style="display: none;" alt="Foto Snack Sore">
+                        <div id="print_noimg_snack_sore" class="print-noimg-snack">(Tidak Ada Foto)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const tanggalInput = document.getElementById('tanggal');
+        const displayFormattedDate = document.getElementById('display_formatted_date');
+
+        // Format Date Helper
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const date = new Date(dateString + 'T00:00:00');
+            return date.toLocaleDateString('id-ID', options);
+        }
+
+        // Set default to today
+        const today = new Date().toISOString().split('T')[0];
+        tanggalInput.value = today;
+        displayFormattedDate.innerText = formatDate(today);
+
+        // Update display date on change
+        tanggalInput.addEventListener('change', function() {
+            displayFormattedDate.innerText = formatDate(this.value);
+        });
+
+        function previewImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            const placeholder = document.getElementById(previewId.replace('preview_', 'placeholder_'));
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+                if (placeholder) placeholder.style.display = 'block';
+            }
+        }
+
+        function preparePrintData() {
+            const tanggalValue = tanggalInput.value;
+            const formattedDate = formatDate(tanggalValue);
+            
+            // Update semua elemen teks tanggal (karena ada di halaman 1 dan halaman 2)
+            document.querySelectorAll('.print_tanggal_formatted').forEach(el => {
+                el.innerText = formattedDate;
+            });
+
+            const mealTypes = ['pagi', 'siang', 'malam', 'snack_pagi', 'snack_sore'];
+
+            mealTypes.forEach(type => {
+                const previewImg = document.getElementById(`preview_${type}`);
+                const printImg = document.getElementById(`print_img_${type}`);
+                const noImgText = document.getElementById(`print_noimg_${type}`);
+
+                if (previewImg && previewImg.style.display === 'block' && previewImg.src) {
+                    printImg.src = previewImg.src;
+                    printImg.style.display = 'block';
+                    noImgText.style.display = 'none';
+                } else {
+                    printImg.style.display = 'none';
+                    noImgText.style.display = 'flex';
+                }
+            });
+        }
+
+        // Form Submit Handler
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            preparePrintData();
+            setTimeout(() => {
+                window.print();
+            }, 200);
+        });
+
+        // Reset Handler
+        function resetForm() {
+            document.getElementById('reportForm').reset();
+            tanggalInput.value = today;
+            displayFormattedDate.innerText = formatDate(today);
+
+            const mealTypes = ['pagi', 'siang', 'malam', 'snack_pagi', 'snack_sore'];
+            mealTypes.forEach(type => {
+                const preview = document.getElementById(`preview_${type}`);
+                const placeholder = document.getElementById(`placeholder_${type}`);
+                if (preview) {
+                    preview.src = '';
+                    preview.style.display = 'none';
+                }
+                if (placeholder) {
+                    placeholder.style.display = 'block';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
